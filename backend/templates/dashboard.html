@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qaptiz.ai — Dashboard</title>
+
+  <style>
+    :root {
+      --blue-500: #0d6efd;
+      --blue-600: #0b5ed7;
+      --muted: #6c757d;
+      --sidebar-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --success: #198754;
+      --warning: #ffc107;
+      --danger: #dc3545;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+    body {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background: #f4f6f9;
+      color: #212529;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar-bg);
+      padding: 25px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #dee2e6;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 35px;
+    }
+
+    .logo-block img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+
+    .logo-text .name { font-weight: 700; color: var(--blue-600); font-size: 1.05rem; }
+    .logo-text .desc { font-size: 0.82rem; color: var(--muted); }
+
+    nav { display: flex; flex-direction: column; gap: 10px; }
+    .nav-link {
+      padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #333; font-weight: 500; transition: all 0.3s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--blue-500); color: #fff; }
+
+    .logout-btn, .warmup-btn {
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    .warmup-btn {
+      background: var(--warning);
+      color: #212529;
+      font-weight: 500;
+    }
+    .warmup-btn:hover { background: #e0a800; }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      font-weight: 500;
+    }
+    .logout-btn:hover {
+      background: #b52a37;
+    }
+
+    .sidebar-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid #e0e0e0;
+      padding-top: 10px;
+      margin-top: 20px;
+    }
+
+    /* Main Section */
+    main {
+      flex: 1;
+      padding: 25px 30px;
+      overflow-y: auto;
+    }
+
+    .topbar { margin-bottom: 25px; }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover { transform: translateY(-4px); }
+
+    .stat-label { font-size: 0.9rem; color: var(--muted); }
+    .stat-value { font-size: 1.8rem; font-weight: 700; }
+    .stat-icon { font-size: 1.6rem; opacity: 0.8; }
+
+    /* Camera Grid */
+    .camera-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .card-custom {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 380px;
+      transition: transform 0.3s ease;
+      background: #000;
+    }
+
+    .card-custom:hover { transform: scale(1.01); }
+
+    .feed-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      transition: background 0.3s ease;
+    }
+
+    .overlay:hover { background: rgba(0, 0, 0, 0.35); }
+
+    .camera-title {
+      font-weight: 600;
+      font-size: 1rem;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .camera-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+      background: rgba(255,255,255,0.85);
+      color: #333;
+    }
+
+    .icon-btn:hover { transform: scale(1.1); }
+    .icon-start { color: var(--success); }
+    .icon-stop { color: var(--danger); }
+
+    @media (max-width: 900px) {
+      .camera-grid { grid-template-columns: 1fr; }
+      .card-custom { height: 300px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo-block">
+        <img src="1.jpg" alt="logo">
+        <div class="logo-text">
+          <div class="name">Qaptiz.ai</div>
+          <div class="desc">AI Detection</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="dashboard.html" class="nav-link active">📊 Dashboard</a>
+        <a href="Reports.html" class="nav-link">📈 Reports</a>
+        <a href="Analytics.html" class="nav-link">⚙️ Analytics</a>
+        <a href="Assign.html" class="nav-link">📝 Assign</a>
+       
+      </nav>
+    </div>
+
+    <div>
+      <button class="warmup-btn" onclick="alert('Warmup process started!')">🔥 Warmup</button>
+      <button class="logout-btn">Logout</button>
+      <div class="sidebar-footer">Version 1.0 <br> © Qaptiz.ai</div>
+    </div>
+  </aside>
+
+  <!-- Main Dashboard -->
+  <main>
+    <div class="topbar">
+      <h2>Dashboard</h2>
+      <p class="small-muted">Live Conveyor Camera Monitoring — laptop camera mirrored on all tiles</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card" style="border-left:5px solid var(--blue-500);">
+        <div>
+          <div class="stat-label">Total Bags</div>
+          <div class="stat-value" id="bagsCount">120</div>
+        </div>
+        <div class="stat-icon">👜</div>
+      </div>
+
+      <div class="stat-card" style="border-left:5px solid var(--warning);">
+        <div>
+          <div class="stat-label">Total Boxes</div>
+          <div class="stat-value" id="boxesCount">85</div>
+        </div>
+        <div class="stat-icon">📦</div>
+      </div>
+
+      <div class="stat-card" style="border-left:5px solid var(--success);">
+        <div>
+          <div class="stat-label">Total Trucks</div>
+          <div class="stat-value" id="trucksCount">6</div>
+        </div>
+        <div class="stat-icon">🚚</div>
+      </div>
+    </div>
+
+    <!-- Cameras -->
+    <div class="camera-grid">
+      <div class="card-custom" data-cam="1">
+        <div class="feed-box">
+          <!-- All cards initially point to same backend MJPEG endpoint -->
+          <img id="cam1" data-src-index="0" src="/video_feed" alt="Camera 1">
+        </div>
+        <div class="overlay">
+          <div class="camera-title">Camera 1 (Laptop)</div>
+          <div class="camera-controls">
+            <button class="icon-btn icon-start" data-cam="1" title="Start">▶</button>
+            <button class="icon-btn icon-stop" data-cam="1" title="Stop">⏹</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-custom" data-cam="2">
+        <div class="feed-box">
+          <img id="cam2" data-src-index="0" src="/video_feed" alt="Camera 2">
+        </div>
+        <div class="overlay">
+          <div class="camera-title">Camera 2 (Laptop)</div>
+          <div class="camera-controls">
+            <button class="icon-btn icon-start" data-cam="2" title="Start">▶</button>
+            <button class="icon-btn icon-stop" data-cam="2" title="Stop">⏹</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-custom" data-cam="3">
+        <div class="feed-box">
+          <img id="cam3" data-src-index="0" src="/video_feed" alt="Camera 3">
+        </div>
+        <div class="overlay">
+          <div class="camera-title">Camera 3 (Laptop)</div>
+          <div class="camera-controls">
+            <button class="icon-btn icon-start" data-cam="3" title="Start">▶</button>
+            <button class="icon-btn icon-stop" data-cam="3" title="Stop">⏹</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-custom" data-cam="4">
+        <div class="feed-box">
+          <img id="cam4" data-src-index="0" src="/video_feed" alt="Camera 4">
+        </div>
+        <div class="overlay">
+          <div class="camera-title">Camera 4 (Laptop)</div>
+          <div class="camera-controls">
+            <button class="icon-btn icon-start" data-cam="4" title="Start">▶</button>
+            <button class="icon-btn icon-stop" data-cam="4" title="Stop">⏹</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // This script uses your existing backend endpoints ONLY:
+    // - POST /start { "source": 0 }  -> starts detection on device index 0 (laptop camera)
+    // - POST /stop                 -> stops detection
+    // - /video_feed is the MJPEG image source used by <img> tags
+    //
+    // Updated behaviour: enable per-card start/stop on the client side without changing backend code.
+    // - Starting a card calls POST /start with the requested source (same as before)
+    // - Stopping a card will **only** stop that card on the frontend (set placeholder image). The backend /stop
+    //   is called only when there are no active cards remaining (to avoid stopping the single backend stream
+    //   while other cards still expect it).
+  
+    const DEFAULT_SOURCE_INDEX = 0; // device index for laptop camera
+    const imgs = document.querySelectorAll('.feed-box img');
+    const startButtons = document.querySelectorAll('.icon-start');
+    const stopButtons = document.querySelectorAll('.icon-stop');
+
+    // Track which cards are active (showing stream)
+    const activeCams = new Set();
+
+    // Helper: build feed URL for a particular cam on client (adds src param for clarity + cache bust)
+    function feedUrlFor(camIndex) {
+      return '/video_feed?src=' + camIndex + '&_=' + Date.now();
+    }
+
+    // Placeholder SVG for stopped single card
+    function placeholderDataURI(text = 'Camera stopped') {
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="100%" height="100%" fill="#111"/><text x="50%" y="50%" fill="#fff" dominant-baseline="middle" text-anchor="middle" font-size="20">${text}</text></svg>`
+      );
+    }
+
+    async function callBackendStart(source) {
+      try {
+        const res = await fetch('/start', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ source })
+        });
+        const j = await res.json().catch(()=>({}));
+        if (res.ok && j.ok) {
+          console.log('Backend started source', source, j);
+        } else {
+          console.warn('Start returned non-ok', source, j);
+        }
+      } catch (err) {
+        console.error('Failed to call /start', err);
+      }
+    }
+
+    async function callBackendStop() {
+      try {
+        const res = await fetch('/stop', { method: 'POST' });
+        if (!res.ok) console.warn('Backend /stop returned non-ok');
+        console.log('Called backend /stop');
+      } catch (err) {
+        console.error('Failed to call /stop', err);
+      }
+    }
+
+    // Start a specific card (index is 1..N)
+    async function startCard(camIndex) {
+      // If this is the first active card, call backend /start so the stream is running
+      const wasEmpty = activeCams.size === 0;
+      activeCams.add(camIndex);
+
+      // call backend to (re)start with desired source
+      // we keep the same endpoint (/start) — backend can choose to ignore source if it only supports one
+      await callBackendStart(DEFAULT_SOURCE_INDEX);
+
+      // Set only the specific card to the live feed URL (others unchanged)
+      const img = document.getElementById('cam' + camIndex);
+      if (img) img.src = feedUrlFor(camIndex);
+
+      // Optionally: if other cards were placeholders but should mirror live now, you can uncomment below
+      // imgs.forEach(i => i.src = feedUrlFor(DEFAULT_SOURCE_INDEX));
+
+      // If we just started, also refresh other active cams to ensure they pick up the running stream
+      if (wasEmpty) refreshActiveFeeds();
+    }
+
+    // Stop a specific card (frontend-only stop). If this results in zero active cards, call backend /stop.
+    async function stopCard(camIndex) {
+      activeCams.delete(camIndex);
+
+      // Set only that card to placeholder
+      const img = document.getElementById('cam' + camIndex);
+      if (img) img.src = placeholderDataURI('Camera ' + camIndex + ' stopped');
+
+      // If no more active cards, stop backend to free device
+      if (activeCams.size === 0) {
+        await callBackendStop();
+      }
+    }
+
+    // Refresh all currently active feeds (useful after backend start)
+    function refreshActiveFeeds() {
+      activeCams.forEach(camIndex => {
+        const img = document.getElementById('cam' + camIndex);
+        if (img) img.src = feedUrlFor(camIndex);
+      });
+    }
+
+    // Wire up per-card buttons
+    startButtons.forEach(btn => btn.addEventListener('click', async (ev) => {
+      const cam = Number(btn.getAttribute('data-cam'));
+      await startCard(cam);
+    }));
+
+    stopButtons.forEach(btn => btn.addEventListener('click', async (ev) => {
+      const cam = Number(btn.getAttribute('data-cam'));
+      await stopCard(cam);
+    }));
+
+    // Auto-start behavior: keep original behaviour of attempting to start backend on load
+    window.addEventListener('load', async () => {
+      // Start the backend so the stream is available; then mark all cards active so they show the feed
+      // (This mirrors the previous behaviour where all tiles showed the same laptop camera)
+      await callBackendStart(DEFAULT_SOURCE_INDEX);
+
+      // Mark cards 1..4 as active and refresh their src to the live feed
+      [1,2,3,4].forEach(i => activeCams.add(i));
+      refreshActiveFeeds();
+
+      // Keep refreshing active feeds every 5s to keep MJPEG connections healthy
+      setInterval(() => {
+        refreshActiveFeeds();
+      }, 5000);
+    });
+
+    // Double-click to refresh individual tile
+    imgs.forEach(img => img.addEventListener('dblclick', function() {
+      const id = this.id.replace('cam','');
+      if (activeCams.has(Number(id))) this.src = feedUrlFor(Number(id));
+    }));
+  </script>
+</body>
+</html>

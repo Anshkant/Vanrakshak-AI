@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qaptiz.ai — Assign Cameras</title>
+
+  <style>
+    :root {
+      --blue-500: #0d6efd;
+      --blue-600: #0b5ed7;
+      --muted: #6c757d;
+      --sidebar-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --success: #198754;
+      --danger: #dc3545;
+      --warning: #ffc107;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background: #f4f6f9;
+      color: #212529;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar-bg);
+      padding: 25px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #dee2e6;
+    }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 35px;
+    }
+
+    .logo-block img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logo-text .name {
+      font-weight: 700;
+      color: var(--blue-600);
+      font-size: 1.05rem;
+    }
+
+    .logo-text .desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-link {
+      padding: 10px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: var(--blue-500);
+      color: #fff;
+    }
+
+    /* Warmup and Logout buttons */
+    .warmup-btn {
+      border: none;
+      background: var(--warning);
+      color: #000;
+      padding: 10px;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .warmup-btn:hover {
+      background: #e0a800;
+      color: #000;
+    }
+
+    .logout-btn {
+      border: none;
+      background: var(--danger);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #b02a37;
+    }
+
+    .sidebar-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid #e0e0e0;
+      padding-top: 10px;
+      margin-top: 20px;
+    }
+
+    /* Main Section */
+    main {
+      flex: 1;
+      padding: 25px 30px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: var(--blue-600);
+    }
+
+    /* Form */
+    .form-card {
+      background: var(--card-bg);
+      padding: 25px 30px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ced4da;
+      font-size: 0.95rem;
+    }
+
+    input[readonly] {
+      background: #f8f9fa;
+    }
+
+    .submit-btn {
+      background: var(--blue-500);
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: var(--blue-600);
+    }
+
+    /* Table */
+    .assigned-list {
+      background: var(--card-bg);
+      margin-top: 30px;
+      width: 100%;
+      max-width: 700px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 15px;
+    }
+
+    .assigned-list h3 {
+      margin-bottom: 10px;
+      color: var(--blue-600);
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: var(--blue-500);
+      color: white;
+    }
+
+    .release-btn, .edit-btn {
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.3s;
+    }
+
+    .release-btn { background: var(--danger); }
+    .edit-btn { background: var(--warning); color: black; }
+
+    .release-btn:hover { background: #b02a37; }
+    .edit-btn:hover { background: #e0a800; }
+
+    /* Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 320px;
+    }
+
+    .popup-content h3 {
+      color: var(--success);
+      margin-bottom: 10px;
+    }
+
+    .popup-content button {
+      margin-top: 10px;
+      padding: 8px 20px;
+      border: none;
+      background: var(--blue-500);
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo-block">
+        <img src="1.jpg" alt="logo">
+        <div class="logo-text">
+          <div class="name">Qaptiz.ai</div>
+          <div class="desc">AI Detection</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+        <a href="Reports.html" class="nav-link">📈 Reports</a>
+        <a href="Analytics.html" class="nav-link">⚙️ Analytics</a>
+        <a href="Assign.html" class="nav-link active">📝 Assign</a>
+       
+      </nav>
+    </div>
+
+    <div>
+      <button class="warmup-btn" onclick="alert('Warmup process started!')">🔥 Warmup</button>
+      <button class="logout-btn">Logout</button>
+      <div class="sidebar-footer">Version 1.0 <br> © Qaptiz.ai</div>
+    </div>
+  </aside>
+
+  <!-- Main Section -->
+  <main>
+    <div class="form-card">
+      <h2 style="text-align:center; margin-bottom:10px;">Assign Camera</h2>
+      <form id="assignForm">
+        <div class="form-group">
+          <label for="vehicleNo">Vehicle No</label>
+          <input type="text" id="vehicleNo" required placeholder="Enter vehicle number">
+        </div>
+
+        <div class="form-group">
+          <label for="camera">Camera</label>
+          <select id="camera" required></select>
+        </div>
+
+        <div class="form-group">
+          <label for="inTime">In Time</label>
+          <input type="text" id="inTime" readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input type="text" id="date" readonly>
+        </div>
+
+        <button type="submit" class="submit-btn">Assign Camera</button>
+      </form>
+    </div>
+
+    <div class="assigned-list">
+      <h3>Assigned Cameras</h3>
+      <table id="assignedTable">
+        <thead>
+          <tr>
+            <th>Vehicle</th>
+            <th>Camera</th>
+            <th>In-Time</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Popups -->
+  <div class="popup" id="successPopup">
+    <div class="popup-content">
+      <h3>✅ Successfully Assigned!</h3>
+      <p>Your task has been saved.</p>
+      <button onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
+  <div class="popup" id="editPopup">
+    <div class="popup-content">
+      <h3>✏️ Edit Vehicle Number</h3>
+      <input type="text" id="editVehicle" placeholder="Enter new Vehicle No" style="width:100%;margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #ccc;">
+      <button onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+
+  <script>
+    const cameras = ["Camera 1", "Camera 2", "Camera 3", "Camera 4", "Camera 5"];
+    const cameraSelect = document.getElementById("camera");
+    const form = document.getElementById("assignForm");
+    const popup = document.getElementById("successPopup");
+    const inTimeField = document.getElementById("inTime");
+    const dateField = document.getElementById("date");
+    const assignedTableBody = document.querySelector("#assignedTable tbody");
+    const editPopup = document.getElementById("editPopup");
+    const editVehicle = document.getElementById("editVehicle");
+    let editingCamera = null;
+
+    function getAssignedCameras() {
+      return JSON.parse(localStorage.getItem("assignedCameras") || "[]");
+    }
+
+    function setAssignedCameras(list) {
+      localStorage.setItem("assignedCameras", JSON.stringify(list));
+    }
+
+    function populateCameras() {
+      cameraSelect.innerHTML = "";
+      const assigned = getAssignedCameras().map(a => a.camera);
+      const available = cameras.filter(cam => !assigned.includes(cam));
+      cameraSelect.innerHTML = available.length
+        ? `<option value="">Select Camera</option>` +
+          available.map(cam => `<option value="${cam}">${cam}</option>`).join("")
+        : "<option>No cameras available</option>";
+      cameraSelect.disabled = available.length === 0;
+    }
+
+    function autoFillTime() {
+      const now = new Date();
+      inTimeField.value = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      dateField.value = now.toLocaleDateString("en-GB");
+    }
+
+    function updateAssignedTable() {
+      const assigned = getAssignedCameras();
+      assignedTableBody.innerHTML = assigned.length
+        ? assigned.map(a => `
+          <tr>
+            <td>${a.vehicle}</td>
+            <td>${a.camera}</td>
+            <td>${a.inTime}</td>
+            <td>${a.date}</td>
+            <td>
+              <button class="edit-btn" onclick="editAssignment('${a.camera}')">Edit</button>
+              <button class="release-btn" onclick="releaseFromList('${a.camera}')">Release</button>
+            </td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="5">No assignments yet</td></tr>`;
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const vehicle = document.getElementById("vehicleNo").value.trim();
+      const camera = cameraSelect.value;
+      if (!camera) return alert("Please select a camera.");
+
+      const newEntry = { vehicle, camera, inTime: inTimeField.value, date: dateField.value };
+      const assigned = getAssignedCameras();
+      assigned.push(newEntry);
+      setAssignedCameras(assigned);
+      popup.style.display = "flex";
+    });
+
+    function closePopup() {
+      popup.style.display = "none";
+      form.reset();
+      autoFillTime();
+      populateCameras();
+      updateAssignedTable();
+    }
+
+    function releaseFromList(cameraName) {
+      const assigned = getAssignedCameras();
+      const updated = assigned.filter(a => a.camera !== cameraName);
+      setAssignedCameras(updated);
+      populateCameras();
+      updateAssignedTable();
+      alert(`${cameraName} released.`);
+    }
+
+    function editAssignment(cameraName) {
+      const assigned = getAssignedCameras();
+      const record = assigned.find(a => a.camera === cameraName);
+      if (!record) return;
+
+      editingCamera = cameraName;
+      editVehicle.value = record.vehicle;
+      editPopup.style.display = "flex";
+    }
+
+    function saveEdit() {
+      const assigned = getAssignedCameras();
+      const idx = assigned.findIndex(a => a.camera === editingCamera);
+      if (idx === -1) return;
+
+      assigned[idx].vehicle = editVehicle.value.trim();
+      setAssignedCameras(assigned);
+
+      editPopup.style.display = "none";
+      updateAssignedTable();
+      alert("Vehicle number updated successfully!");
+    }
+
+    window.onload = () => {
+      autoFillTime();
+      populateCameras();
+      updateAssignedTable();
+    };
+  </script>
+</body>
+</html>

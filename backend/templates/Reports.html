@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qaptiz.ai — Reports</title>
+  <style>
+    :root {
+      --blue-500: #0d6efd;
+      --blue-600: #0b5ed7;
+      --muted: #6c757d;
+      --sidebar-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --success: #198754;
+      --warning: #ffc107;
+      --danger: #dc3545;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+    body {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background: #f4f6f9;
+      color: #212529;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar-bg);
+      padding: 25px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #dee2e6;
+    }
+
+    .logo-block { display: flex; align-items: center; gap: 10px; margin-bottom: 35px; }
+    .logo-block img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+    .logo-text .name { font-weight: 700; color: var(--blue-600); font-size: 1.05rem; }
+    .logo-text .desc { font-size: 0.82rem; color: var(--muted); }
+
+    nav { display: flex; flex-direction: column; gap: 10px; }
+    .nav-link {
+      padding: 10px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--blue-500); color: #fff; }
+
+    .warmup-btn, .logout-btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    .warmup-btn { background: var(--warning); color: #212529; font-weight: 500; }
+    .warmup-btn:hover { background: #e0a800; }
+    .logout-btn { background: var(--danger); color: #fff; font-weight: 500; }
+    .logout-btn:hover { background: #b02a37; }
+
+    .sidebar-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid #e0e0e0;
+      padding-top: 10px;
+      margin-top: 20px;
+    }
+
+    main { flex: 1; padding: 25px 30px; overflow-y: auto; }
+    h2 { color: var(--blue-600); }
+
+    .topbar { margin-bottom: 15px; }
+    .small-muted { font-size: 0.9rem; color: var(--muted); }
+
+    .report-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+
+    .download-btn {
+      background: var(--blue-500);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.9rem;
+    }
+    .download-btn:hover { background: var(--blue-600); }
+
+    .report-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    thead { background-color: var(--blue-500); color: white; }
+    th, td {
+      text-align: center;
+      padding: 10px 8px;
+      border-bottom: 1px solid #dee2e6;
+      font-size: 0.95rem;
+    }
+    tbody tr:hover { background-color: #f1f3f5; transition: 0.3s; }
+    .total-cell { font-weight: 700; color: var(--success); }
+    .date-cell { color: var(--muted); font-size: 0.9rem; }
+
+    .action-btn {
+      border: none;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 2px;
+    }
+    .edit-btn { background: var(--warning); color: #212529; }
+    .edit-btn:hover { background: #e0a800; }
+    .delete-btn { background: var(--danger); color: #fff; }
+    .delete-btn:hover { background: #bb2d3b; }
+    .save-btn { background: var(--blue-500); color: #fff; }
+    .save-btn:hover { background: var(--blue-600); }
+    .cancel-btn { background: var(--danger); color: #fff; }
+    .cancel-btn:hover { background: #b02a37; }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .page-btn {
+      background: var(--blue-500);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .page-btn:hover { background: var(--blue-600); }
+    .page-info { color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div>
+      <div class="logo-block">
+        <img src="1.jpg" alt="logo">
+        <div class="logo-text">
+          <div class="name">Qaptiz.ai</div>
+          <div class="desc">AI Detection</div>
+        </div>
+      </div>
+      <nav>
+        <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+        <a href="Reports.html" class="nav-link active">📈 Reports</a>
+        <a href="Analytics.html" class="nav-link">📉 Analytics</a>
+        <a href="Assign.html" class="nav-link">📝 Assign</a>
+        
+      </nav>
+    </div>
+    <div>
+      <button class="warmup-btn" onclick="alert('🔥 Warmup process started!')">🔥 Warmup</button>
+      <button class="logout-btn" onclick="alert('You have logged out!')">Logout</button>
+      <div class="sidebar-footer">Version 1.0 <br> © Qaptiz.ai</div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <h2>Reports</h2>
+      <p class="small-muted">Live Conveyor Camera Monitoring</p>
+    </div>
+
+    <div class="report-actions">
+      <button class="download-btn" onclick="downloadSelected()">⬇️ Download Selected</button>
+      <button class="download-btn" onclick="downloadAll()">📦 Download All</button>
+    </div>
+
+    <div class="report-card">
+      <table id="reportTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
+            <th>Sr. No.</th>
+            <th>Truck No.</th>
+            <th>Camera No.</th>
+            <th>In Time</th>
+            <th>Out Time</th>
+            <th>Bags</th>
+            <th>Boxes</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="pagination">
+        <button class="page-btn" onclick="prevPage()">⬅ Prev</button>
+        <span class="page-info" id="pageInfo">Page 1</span>
+        <button class="page-btn" onclick="nextPage()">Next ➡</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const allData = [];
+    for (let i = 1; i <= 500; i++) {
+      allData.push({
+        sr: i,
+        truck: `MH12 AB${1000 + i}`,
+        camera: `Camera ${((i - 1) % 4) + 1}`,
+        inTime: "08:15 AM",
+        outTime: "08:45 AM",
+        bags: Math.floor(Math.random() * 100),
+        boxes: Math.floor(Math.random() * 50),
+        date: "11-Nov-2025"
+      });
+    }
+
+    const recordsPerPageList = [10, 50, 100]; // Page 1 =10, 2=50, 3=100
+    let currentPage = 1;
+
+    function renderTable() {
+      const perPage = recordsPerPageList[currentPage - 1] || 100;
+      const tableBody = document.querySelector("#reportTable tbody");
+      const start = 0;
+      const end = Math.min(perPage, allData.length);
+      const data = allData.slice(0, end);
+
+      tableBody.innerHTML = data.map(d => `
+        <tr>
+          <td><input type="checkbox" class="row-check"></td>
+          <td>${d.sr}</td>
+          <td>${d.truck}</td>
+          <td>${d.camera}</td>
+          <td>${d.inTime}</td>
+          <td>${d.outTime}</td>
+          <td>${d.bags}</td>
+          <td>${d.boxes}</td>
+          <td class="total-cell">${d.bags + d.boxes}</td>
+          <td class="date-cell">${d.date}</td>
+          <td>
+            <button class="action-btn edit-btn" onclick="editRow(this)">Edit</button>
+            <button class="action-btn delete-btn" onclick="deleteRow(this)">Delete</button>
+          </td>
+        </tr>
+      `).join("");
+
+      document.getElementById("pageInfo").innerText = `Page ${currentPage} — Showing ${perPage} Records`;
+    }
+
+    function nextPage() {
+      if (currentPage < recordsPerPageList.length) {
+        currentPage++;
+        renderTable();
+      } else {
+        alert("No more pages!");
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      } else {
+        alert("Already at first page!");
+      }
+    }
+
+    function deleteRow(btn) {
+      const row = btn.closest("tr");
+      if (confirm("Are you sure you want to delete this record?")) row.remove();
+    }
+
+    function editRow(btn) {
+      const row = btn.closest("tr");
+      const cells = row.querySelectorAll("td");
+      if (row.classList.contains("editing")) return;
+      row.classList.add("editing");
+      const oldValues = Array.from(cells).map(td => td.innerText);
+      for (let i = 2; i <= 7; i++) {
+        cells[i].innerHTML = `<input type="text" value="${oldValues[i]}" style="width:100%; padding:4px; font-size:0.85rem;">`;
+      }
+      cells[10].innerHTML = `
+        <button class="action-btn save-btn" onclick="saveRow(this)">Save</button>
+        <button class="action-btn cancel-btn" onclick="cancelEdit(this)">Cancel</button>`;
+      row.dataset.oldValues = JSON.stringify(oldValues);
+    }
+
+    function saveRow(btn) {
+      const row = btn.closest("tr");
+      const inputs = row.querySelectorAll("input[type=text]");
+      const cells = row.querySelectorAll("td");
+      for (let i = 2; i <= 7; i++) cells[i].innerText = inputs[i - 2].value.trim();
+      const total = parseInt(cells[6].innerText) + parseInt(cells[7].innerText);
+      cells[8].innerText = isNaN(total) ? 0 : total;
+      cells[10].innerHTML = `
+        <button class="action-btn edit-btn" onclick="editRow(this)">Edit</button>
+        <button class="action-btn delete-btn" onclick="deleteRow(this)">Delete</button>`;
+      row.classList.remove("editing");
+    }
+
+    function cancelEdit(btn) {
+      const row = btn.closest("tr");
+      const oldValues = JSON.parse(row.dataset.oldValues);
+      const cells = row.querySelectorAll("td");
+      for (let i = 2; i <= 9; i++) cells[i].innerText = oldValues[i];
+      cells[10].innerHTML = `
+        <button class="action-btn edit-btn" onclick="editRow(this)">Edit</button>
+        <button class="action-btn delete-btn" onclick="deleteRow(this)">Delete</button>`;
+      row.classList.remove("editing");
+    }
+
+    function toggleAll(source) {
+      document.querySelectorAll(".row-check").forEach(chk => chk.checked = source.checked);
+    }
+
+    function downloadCSV(rows, filename = "reports.csv") {
+      let csv = [];
+      rows.forEach(row => csv.push(row.join(",")));
+      const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    function downloadSelected() {
+      const table = document.getElementById("reportTable");
+      const rows = Array.from(table.querySelectorAll("tbody tr"))
+        .filter(r => r.querySelector(".row-check").checked)
+        .map(r => Array.from(r.cells).slice(1, 10).map(td => td.innerText));
+      if (rows.length === 0) {
+        alert("Please select at least one row!");
+        return;
+      }
+      const headers = ["Sr.No", "Truck No", "Camera No", "In Time", "Out Time", "Bags", "Boxes", "Total", "Date"];
+      downloadCSV([headers, ...rows], "selected_reports.csv");
+    }
+
+    function downloadAll() {
+      const table = document.getElementById("reportTable");
+      const rows = Array.from(table.querySelectorAll("tbody tr"))
+        .map(r => Array.from(r.cells).slice(1, 10).map(td => td.innerText));
+      const headers = ["Sr.No", "Truck No", "Camera No", "In Time", "Out Time", "Bags", "Boxes", "Total", "Date"];
+      downloadCSV([headers, ...rows], "all_reports.csv");
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

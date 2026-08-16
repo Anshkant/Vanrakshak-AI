@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qaptiz.ai — Loading</title>
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f8fbff, #dceeff);
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+    }
+
+    .splash {
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .splash img {
+      width: 180px;
+      height: auto;
+      border-radius: 12px;
+      user-select: none;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .title {
+      font-size: 2rem;
+      color: #004aad;
+      margin-top: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    #splashTyping {
+      border-right: 3px solid #004aad;
+      padding-right: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      animation: typing 2s steps(10, end), blink 0.7s infinite;
+    }
+
+    .small-muted {
+      font-size: 1rem;
+      color: #0066ff;
+      opacity: 0.8;
+      margin-top: 6px;
+    }
+
+    /* Circular loader */
+    .loader {
+      margin: 25px auto 0;
+      border: 5px solid #e0ecff;
+      border-top: 5px solid #007bff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Animations */
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash">
+    <img src="1.jpg" alt="Qaptiz.ai logo">
+    <div class="title">
+      <span id="splashTyping"></span>
+    </div>
+    <div class="small-muted">Factory AI Detection</div>
+    <div class="loader"></div>
+  </div>
+
+  <script>
+    const text = "Qaptiz.ai";
+    const typingElement = document.getElementById("splashTyping");
+    let index = 0;
+
+    function type() {
+      if (index < text.length) {
+        typingElement.textContent += text.charAt(index);
+        index++;
+        setTimeout(type, 150);
+      } else {
+        // after typing & loader shown → redirect to login
+        setTimeout(() => {
+          document.body.style.opacity = 0;
+          setTimeout(() => window.location.href = "login.html", 800);
+        }, 1500);
+      }
+    }
+    window.onload = type;
+  </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qaptiz.ai — Login</title>
+
+  <style>
+    :root {
+      --blue-500: #007bff;
+      --blue-600: #0056d2;
+      --text-dark: #1f1f1f;
+      --text-light: #ffffff;
+      --bg-light: #f4f8ff;
+      --bg-dark: #121212;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg-light);
+      font-family: "Poppins", sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      padding: 40px 45px;
+      width: 380px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark .login-card {
+      background: #1e1e1e;
+    }
+
+    .logo-small img {
+      width: 70px;
+      height: 70px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--blue-600);
+      letter-spacing: 1px;
+    }
+
+    .small-muted {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+      font-size: 1rem;
+      margin-top: 5px;
+      transition: border 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: var(--blue-500);
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      width: 60%;
+      background: linear-gradient(90deg, var(--blue-500), var(--blue-600));
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+      display: block;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 45px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--blue-500);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(21px);
+    }
+
+    #loginError {
+      color: #e63946;
+      opacity: 0;
+      text-align: center;
+      margin-top: 10px;
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+    <div style="text-align:center; margin-bottom:20px;">
+      <div class="logo-small">
+        <img src="logo.jpg" alt="logo">
+      </div>
+      <div class="form-title" style="margin-top:10px;">Qaptiz.ai</div>
+      <div class="small-muted">Sign in to your dashboard</div>
+    </div>
+
+    <div style="text-align:right; margin-bottom:10px;">
+      <span class="small-muted theme-label">🌙</span>
+      <label class="switch">
+        <input class="theme-switch-input" type="checkbox" role="switch">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <form id="loginForm">
+      <label class="small-muted">Username</label>
+      <input id="username" class="form-control" placeholder="admin" required>
+
+      <label class="small-muted" style="margin-top:12px;">Password</label>
+      <input id="password" class="form-control" type="password" placeholder="••••••" required>
+
+      <div id="loginError">Invalid username or password</div>
+
+      <div class="btn-container">
+        <button class="btn-primary" type="submit">Login</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Theme toggle
+    const toggleSwitch = document.querySelector('.theme-switch-input');
+    const body = document.body;
+    toggleSwitch.addEventListener('change', () => {
+      body.classList.toggle('dark', toggleSwitch.checked);
+      localStorage.setItem('theme', toggleSwitch.checked ? 'dark' : 'light');
+    });
+    if (localStorage.getItem('theme') === 'dark') {
+      body.classList.add('dark');
+      toggleSwitch.checked = true;
+    }
+
+    // Login validation
+    const loginForm = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('loginError');
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username === 'admin' && password === 'admin') {
+        errorDiv.style.opacity = 0;
+        setTimeout(() => window.location.href = 'dashboard.html', 300);
+      } else {
+        errorDiv.style.opacity = 1;
+      }
+    });
+  </script>
+</body>
+</html>
