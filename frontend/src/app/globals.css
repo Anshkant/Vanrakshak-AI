@@ -1,0 +1,97 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap");
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #106cb2;
+  --color-primary-glow: rgba(16, 108, 178, 0.3);
+  --color-emerald-glow: rgba(16, 185, 129, 0.3);
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #0a141c;
+  
+  --font-display: 'Inter', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+
+  --animate-pulse-slow: pulse-slow 4s infinite;
+  --animate-scan: scan 8s linear infinite;
+  --animate-fade-in: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.7; filter: brightness(1.2); }
+}
+
+@keyframes scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility hud-card {
+  @apply bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-xl overflow-hidden transition-all duration-300;
+}
+
+@utility hud-button {
+  @apply px-6 py-2.5 rounded-2xl font-black text-sm uppercase tracking-tight transition-all active:scale-[0.97] disabled:opacity-50;
+}
+
+@utility glass-nav {
+  @apply sticky top-0 z-[60] bg-white/60 dark:bg-[#0a141c]/60 backdrop-blur-2xl border-b border-slate-200/50 dark:border-white/5;
+}
+
+@utility scanline {
+  @apply absolute inset-0 pointer-events-none overflow-hidden z-[1];
+  &::after {
+    content: "";
+    @apply absolute inset-0 w-full h-[200%] opacity-[0.03] dark:opacity-[0.07];
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, #106cb2 2px, #106cb2 3px);
+    animation: scan 10s linear infinite;
+  }
+}
+
+body {
+  background-color: var(--color-background-light);
+  color: #0f172a; /* slate-900 */
+  @apply font-sans antialiased;
+}
+
+.dark body {
+    background-color: var(--color-background-dark);
+    color: #f8fafc;
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 dark:bg-slate-800 rounded-full;
+}
+
+.map-pulse {
+  position: relative;
+}
+.map-pulse::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: inherit;
+  border-radius: inherit;
+  animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.33); opacity: 1; }
+  80%, 100% { opacity: 0; }
+}
