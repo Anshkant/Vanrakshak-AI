@@ -35,10 +35,14 @@ export default async function DashboardPage() {
     .eq('zone_id', zoneId)
     .neq('status', 'resolved');
 
-  const { data: cameras } = await supabase
-    .from('cameras')
-    .select('*')
-    .eq('zone_id', zoneId);
+  const { data: cameras, error: camerasError } = await supabase
+  .from('cameras')
+  .select('*')
+  .eq('zone_id', zoneId);
+
+if (camerasError) {
+  console.error('CAMERAS FETCH ERROR:', camerasError);
+}
 
   // 4. Calculate Stats (Simplified Logic)
   const criticalAlerts = alerts?.filter(a => a.severity?.toLowerCase() === 'critical').length || 0;
