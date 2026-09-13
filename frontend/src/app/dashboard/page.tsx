@@ -135,14 +135,24 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {cameras?.length ? cameras.map((cam) => (
                 <div key={cam.id} className="group relative aspect-video bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden border border-primary/10 shadow-lg">
-                  <img className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" src={cam.feed_url || "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=640&auto=format"} alt={cam.name} />
+                 <img
+  className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+  src={cam.feed_url || "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=640&auto=format"}
+  onError={(e) => {
+    e.currentTarget.src =
+      "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=640&auto=format";
+  }}
+  alt={cam.name}
+/>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   <div className={`absolute top-3 left-3 ${cam.status === 'online' ? 'bg-red-600' : 'bg-slate-500'} text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1`}>
                     <span className={`w-1.5 h-1.5 ${cam.status === 'online' ? 'bg-white' : 'bg-slate-300'} rounded-full ${cam.status === 'online' ? 'animate-pulse' : ''}`}></span> {cam.status?.toUpperCase() || 'OFFLINE'}
                   </div>
                   <div className="absolute bottom-3 left-3">
                     <p className="text-white text-sm font-bold">{cam.name}</p>
-                    <p className="text-white/70 text-[10px]">{cam.location} • Battery: {cam.battery}%</p>
+                    <p className="text-white/70 text-[10px]">
+  {cam.location} • Battery: {cam.battery != null ? `${cam.battery}%` : 'N/A'}
+</p>
                   </div>
                 </div>
               )) : (
