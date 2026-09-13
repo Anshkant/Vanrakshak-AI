@@ -138,10 +138,7 @@ export default async function DashboardPage() {
                  <img
   className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
   src={cam.feed_url || "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=640&auto=format"}
-  onError={(e) => {
-    e.currentTarget.src =
-      "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=640&auto=format";
-  }}
+
   alt={cam.name}
 />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
